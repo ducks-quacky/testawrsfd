@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://media.discordapp.net/attachments/785361564239790151/1387313030307778570/Group_792.png?ex=685ce371&is=685b91f1&hm=d2956bfeb0a1a500467a6da1386983b5edca052edf6dcf65e95836b7cb2b5d4a&=&format=webp&quality=lossless&width=1010&height=960" rel="icon" media="(prefers-color-scheme: dark)">
+    <meta property="og:type" content="Toolz">
+    <meta property="og:title" content="Toolz">
+    <meta property="og:description" content="productivity bot">
+    <meta property="og:image" content="https://images-ext-1.discordapp.net/external/OVfsZiDSa0zfZl3yI9aRo1n42LNeHI3GnXPj-saIKoA/%3Fsize%3D1024/https/cdn.discordapp.com/banners/1376260705459900526/87da5ac2141153b2fcf5dc9e94e624b6.webp?format=webp">
+    <title>Toolz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0E0E10;
+            --surface: #1C1C1F;
+            --border: #2B2B30;
+            --text-primary: #F1F1F1;
+            --text-secondary: #A8A8B3;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(14, 14, 16, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--text-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-nav-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(28, 28, 31, 0.95);
+            border: 1px solid var(--border);
+            border-top: none;
+            backdrop-filter: blur(10px);
+            z-index: 999;
+        }
+
+        .mobile-nav-dropdown.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .mobile-nav-dropdown ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .mobile-nav-dropdown li {
+            margin: 0;
+        }
+
+        .mobile-nav-dropdown a {
+            display: block;
+            padding: 1rem 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-nav-dropdown a:hover,
+        .mobile-nav-dropdown a.active {
+            background: rgba(241, 241, 241, 0.05);
+            color: var(--text-primary);
+        }
+
+        .mobile-nav-dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        /* Add Bot Button */
+        .add-bot-btn {
+            background: linear-gradient(135deg, #5865F2, #4752C4);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-bot-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.3);
+            background: linear-gradient(135deg, #4752C4, #3c4394);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Mobile-specific adjustments - FIXED */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 2rem;
+                flex-wrap: wrap;
+            }
+            
+            .nav-links {
+                display: none; /* Hide desktop nav links on mobile */
+            }
+            
+            .mobile-nav-toggle {
+                display: block; /* Show mobile toggle button */
+            }
+            
+            .logo {
+                flex: 1; /* Allow logo to take available space */
+            }
+            
+            .nav-right {
+                flex-shrink: 0; /* Prevent add bot button from shrinking */
+            }
+            
+            /* Make add bot button smaller on mobile */
+            .add-bot-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Even smaller screens */
+        @media (max-width: 480px) {
+            nav {
+                padding: 0.75rem 1rem;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+            
+            .add-bot-btn {
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page-section {
+            display: none;
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Card Styles */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--text-primary), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--text-secondary);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .card-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-in-progress {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .status-planned {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        .status-under-review {
+            background: rgba(241, 99, 99, 0.2);
+            color: #f16363;
+            border: 1px solid rgba(241, 99, 99, 0.3);
+        }
+
+        /* Home Hero */
+        .hero {
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--surface) 100%);
+            margin: -3rem -2rem 3rem -2rem;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--surface);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(241, 241, 241, 0.1);
+        }
+
+        /* FAQ Styles */
+        .faq-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: rgba(241, 241, 241, 0.05);
+        }
+
+        .faq-question h3 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .faq-toggle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            border-top: 1px solid var(--border);
+        }
+
+        .faq-answer.active {
+            max-height: 200px;
+        }
+
+        .faq-answer p {
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        .sort-options {
+  margin-bottom: 20px;
+}
+
+#filter-select {
+  background-color: #1c1b1e;
+  color: white;
+  border: 1px solid #333;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a class="logo" href="#home" onclick="navigateTo(event, 'home')">Toolz</a>
+            
+                <ul class="nav-links">
+                    <li><a href="/home" onclick="navigateTo(event, 'home')" class="nav-link active">Home</a></li>
+                    <li><a href="/features" onclick="navigateTo(event, 'features')" class="nav-link">Features</a></li>
+                    <li><a href="/updatelog" onclick="navigateTo(event, 'updatelog')" class="nav-link">Update Log</a></li>
+                    <li><a href="/faq" onclick="navigateTo(event, 'faq')" class="nav-link">FAQ</a></li>
+                    <li><a href="/plannedfeatures" onclick="navigateTo(event, 'plannedfeatures')" class="nav-link">Planned Features</a></li>
+                </ul>
+
+            <button class="mobile-nav-toggle" onclick="toggleMobileNav()">☰</button>
+
+            <div class="nav-right">
+                <a href="https://discord.com/oauth2/authorize?client_id=1376260705459900526" target="_blank" class="add-bot-btn">
+                    🤖 Add Bot
+                </a>
+            </div>
+
+            <div class="mobile-nav-dropdown" id="mobileNav">
+                <ul>
+                    <li><a href="/home" onclick="navigateTo(event, 'home'); closeMobileNav()" class="mobile-nav-link active">Home</a></li>
+                    <li><a href="/features" onclick="navigateTo(event, 'features'); closeMobileNav()" class="mobile-nav-link">Features</a></li>
+                    <li><a href="/updatelog" onclick="navigateTo(event, 'updatelog'); closeMobileNav()" class="mobile-nav-link">Update Log</a></li>
+                    <li><a href="/faq" onclick="navigateTo(event, 'faq'); closeMobileNav()" class="mobile-nav-link">FAQ</a></li>
+                    <li><a href="/plannedfeatures" onclick="navigateTo(event, 'plannedfeatures'); closeMobileNav()" class="mobile-nav-link">Planned Features</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Home Page -->
+        <section id="home" class="page-section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Toolz</h1>
+                    <p>A powerful Discord bot built for productivity, commissions, and everyday utility.</p>
+                    <a class="cta-button" href="#features" onclick="navigateTo(event, 'features')">Explore Features</a>
+                </div>
+            </div>
+            
+            <h2 class="page-title">About Toolz</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <h3 class="card-title">Built for commissions and productivity</h3>
+                    <p class="card-desc">Discover a Discord bot designed to streamline your commissions and boost productivity with powerful, easy-to-use Commands.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3 class="card-title">Active Development</h3>
+                    <p class="card-desc">Will likely always be maintained by the owner, with 24/7 hosting for completely free</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⭐</div>
+                    <h3 class="card-title">suggestions</h3>
+                    <p class="card-desc">Suggestions are always invited to the bot and may be considered</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Page -->
+<!-- Features Page -->
+        <section id="features" class="page-section">
+            <h1 class="page-title">Bot Features</h1>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">📝</div>
+                    <h3 class="card-title">Suggest Features</h3>
+                    <p class="card-desc">Submit feature suggestions to help improve the bot with new functionality and capabilities tailored to your needs.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🕹️</div>
+                    <h3 class="card-title">Game Activity Tracker</h3>
+                    <p class="card-desc">Track Roblox game activity and player statistics using game IDs to monitor performance and engagement metrics.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📃</div>
+                    <h3 class="card-title">Commission Manager</h3>
+                    <p class="card-desc">Create and manage commission agreements with built-in templates and tracking for seamless business transactions.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📕</div>
+                    <h3 class="card-title">Dictionary Lookup</h3>
+                    <p class="card-desc">Instantly look up word definitions, synonyms, and meanings to enhance your vocabulary and communication.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎮</div>
+                    <h3 class="card-title">Roblox User Info</h3>
+                    <p class="card-desc">Display comprehensive information about Roblox users including stats, badges, and profile details.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3 class="card-title">Scam Protection</h3>
+                    <p class="card-desc">Check user scam history and reports to protect yourself from fraudulent transactions and activities.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👤</div>
+                    <h3 class="card-title">User Information</h3>
+                    <p class="card-desc">Display detailed information about Discord users including join dates, roles, and account statistics.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3 class="card-title">Bot Latency Monitor</h3>
+                    <p class="card-desc">Check the bot's response time and latency to ensure optimal performance and connection quality.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧮</div>
+                    <h3 class="card-title">Calculator</h3>
+                    <p class="card-desc">Perform mathematical calculations with an interactive calculator interface for quick computations.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💰</div>
+                    <h3 class="card-title">Currency Converter</h3>
+                    <p class="card-desc">Convert between different currencies and calculate Robux tax rates for accurate financial planning.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📤</div>
+                    <h3 class="card-title">Embed Quick Send</h3>
+                    <p class="card-desc">Create and send custom embed messages with rich formatting and styling options for better communication.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏷️</div>
+                    <h3 class="card-title">Embed Tag Manager</h3>
+                    <p class="card-desc">Manage and organize custom embed tags for efficient message templating and reusable content.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔖</div>
+                    <h3 class="card-title">Tag Display</h3>
+                    <p class="card-desc">Display and retrieve saved tags with custom content for quick access to frequently used information.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🗑️</div>
+                    <h3 class="card-title">Data Management</h3>
+                    <p class="card-desc">Delete your stored data from the bot to maintain privacy and manage your digital footprint.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📦</div>
+                    <h3 class="card-title">Data Export</h3>
+                    <p class="card-desc">Export your stored data including tags, settings, and TOS for backup and migration purposes.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📥</div>
+                    <h3 class="card-title">Data Import</h3>
+                    <p class="card-desc">Import your stored data from backup files to restore tags, settings, and configurations.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚙️</div>
+                    <h3 class="card-title">Settings Manager</h3>
+                    <p class="card-desc">Customize bot settings and preferences to tailor the experience to your specific needs and workflow.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🌍</div>
+                    <h3 class="card-title">Timezone Converter</h3>
+                    <p class="card-desc">Convert time between different timezones for global coordination and scheduling across regions.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📋</div>
+                    <h3 class="card-title">Command Reference</h3>
+                    <p class="card-desc">Access a comprehensive list of all available commands and their descriptions for easy reference.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📄</div>
+                    <h3 class="card-title">TOS Manager</h3>
+                    <p class="card-desc">Manage custom Terms of Service entries with creation, editing, and deletion capabilities.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📤</div>
+                    <h3 class="card-title">TOS Distribution</h3>
+                    <p class="card-desc">Send Terms of Service messages for others to accept with tracking and confirmation features.</p>
+                </div>
+            </div>
+        </section>
+
+<!-- Update Log Page -->
+        <section id="updatelog" class="page-section">
+            <h1 class="page-title">Update Log</h1>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-date">June 24, 2025</div>
+                    <div class="status-badge status-completed">Released</div>
+                    <h3 class="card-title">Latest Update - New Commands</h3>
+                    <p class="card-desc">Added three new essential commands: /command for general command management, /gameactivitytracker for monitoring Roblox game statistics, and /suggest for community feature requests.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 22, 2025</div>
+                    <div class="status-badge status-completed">Released</div>
+                    <h3 class="card-title">Visual Update - New Profile</h3>
+                    <p class="card-desc">Updated the bot's profile picture with a fresh new design that better represents the bot's capabilities and modern aesthetic.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 20, 2025</div>
+                    <div class="status-badge status-completed">Released</div>
+                    <h3 class="card-title">Bug Fix - TOS Character Limit</h3>
+                    <p class="card-desc">Resolved a critical issue where users couldn't edit Terms of Service entries containing more than 1000 characters, improving content management flexibility.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 19, 2025</div>
+                    <div class="status-badge status-completed">Released</div>
+                    <h3 class="card-title">TOS Management System</h3>
+                    <p class="card-desc">Introduced comprehensive TOS management with /TOS-Manager for creating and editing terms, and /sendTOS for distributing agreements to users.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 14, 2025</div>
+                    <div class="status-badge status-completed">Released</div>
+                    <h3 class="card-title">Commands & Timezone Defaults</h3>
+                    <p class="card-desc">Added /commands for comprehensive command listing and implemented default timezone settings in user preferences for better time management.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 9, 2025</div>
+                    <div class="status-badge status-completed">Released</div>
+                    <h3 class="card-title">Multi-Feature Update</h3>
+                    <p class="card-desc">Enhanced timezone converter with bug fixes, improved /robloxinfo command functionality, and added an interactive /calculator for mathematical operations.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 8, 2025</div>
+                    <div class="status-badge status-completed">Public Release</div>
+                    <h3 class="card-title">Public Release - Core Features</h3>
+                    <p class="card-desc">Official public release featuring /robloxinfo for user statistics and /botlatency for performance monitoring, marking the bot's debut to the community.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 3, 2025</div>
+                    <div class="status-badge status-completed">Private</div>
+                    <h3 class="card-title">Internal Update - Gamepass Pricing</h3>
+                    <p class="card-desc">Developed /updategamepass price command for internal testing, currently in private beta for administrative use and price management.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">June 1, 2025</div>
+                    <div class="status-badge status-completed">Private</div>
+                    <h3 class="card-title">Rebranding - Welcome to Toolz</h3>
+                    <p class="card-desc">Major rebranding to "Toolz" with enhanced identity and added /scamlog command for user safety and fraud prevention in trading communities.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">May 29, 2025</div>
+                    <div class="status-badge status-completed">Private</div>
+                    <h3 class="card-title">Dictionary & Currency Expansion</h3>
+                    <p class="card-desc">Introduced /define for word definitions, expanded currency translation options, and implemented admin commands for better bot management.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">May 26, 2025</div>
+                    <div class="status-badge status-completed">Private Alpha</div>
+                    <h3 class="card-title">Alpha Release - Foundation</h3>
+                    <p class="card-desc">Initial private alpha release featuring tag commands for content management, currency translation, userinfo system, and timezone converter functionality.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">May 26, 2025</div>
+                    <div class="status-badge status-completed">2.0 Private Alpha</div>
+                    <h3 class="card-title">Alpha Release - Foundation</h3>
+                    <p class="card-desc">Initial private alpha release featuring tag commands for content management, currency translation, userinfo system, and timezone converter functionality.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">May 20, 2025</div>
+                    <div class="status-badge status-completed">1.0 Discontinued</div>
+                    <h3 class="card-title">1.0 Version Discontinued</h3>
+                    <p class="card-desc">Due to bugs, following with poor functionality, we have decided to start a revamp for the bot.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">March 30, 2025</div>
+                    <div class="status-badge status-completed">Release</div>
+                    <h3 class="card-title">embed tags</h3>
+                    <p class="card-desc">Introduced a embed tag feature, following a timezone converter</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">March 26, 2025</div>
+                    <div class="status-badge status-completed">Release</div>
+                    <h3 class="card-title">userinfo</h3>
+                    <p class="card-desc">Able to check people info about their user ID, account created and their tag.</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">March 24, 2025</div>
+                    <div class="status-badge status-completed">Release</div>
+                    <h3 class="card-title">tags feature</h3>
+                    <p class="card-desc">Introduced a tag system, allowing for easier messages</p>
+                </div>
+                <div class="card">
+                    <div class="card-date">March 20, 2025</div>
+                    <div class="status-badge status-completed">Release</div>
+                    <h3 class="card-title">Release - Currency translation</h3>
+                    <p class="card-desc">release featuring currenty translation</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Page -->
+        <section id="faq" class="page-section">
+            <h1 class="page-title">Frequently Asked Questions</h1>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>When did the bot release?</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>It has released at may 26, following it </p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Why is this free and not paid?</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>This bot cost money to host so with the website, yes, however this bot is for myself aswell, a bot developer have coded this bot for me, which i am 100% grateful for, and i dont want to lock features behind a paywall as i make enough of other stuff that i do to make money and i use this bot alot.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Will this bot Discontinue?</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>I will try upkeeping this bot as much as i can, ill keep it up to 5 years if i am able to.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Are we able to donate?</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, you are able to donate, you may DM me at stuxfian and we can discuss</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Where are we able to suggest features?</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>by doing /suggest with the bot.</p>
+                </div>
+            </div>
+        </section>
+
+<!-- Planned Features Page -->
+        <section id="plannedfeatures" class="page-section">
+            <h1 class="page-title">Planned Features</h1>
+<div class="sort-options">
+  <label for="filter-select">Filter by Status:</label>
+  <select id="filter-select">
+    <option value="all">Show All</option>
+    <option value="in-progress">In Development</option>
+    <option value="planned">Planned</option>
+    <option value="under-review">Under Review</option>
+  </select>
+</div>
+
+
+            <div class="card-grid" id="cardGrid">
+                <div class="card">
+                    <div class="status-badge status-in-progress">In Development</div>
+                    <h3 class="card-title">Notion Database Integration</h3>
+                    <p class="card-desc">Integrate with your Notion database to sync and manage your notion pages seamlessly within Discord for enhanced productivity workflows.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">User Data Command</h3>
+                    <p class="card-desc">Enable users to view and manage their stored data within the bot..</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-in-progress">In Development</div>
+                    <h3 class="card-title">Inline Timestamps</h3>
+                    <p class="card-desc">Allow users to format date and time within Discord messages with ease, supporting multiple timezone formats and display options.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-under-review">Under Review</div>
+                    <h3 class="card-title">Server Count Display</h3>
+                    <p class="card-desc">Enable users to see how many servers they are members of, with detailed server information and membership statistics.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-under-review">Under Review</div>
+                    <h3 class="card-title">User Notes System</h3>
+                    <p class="card-desc">Allow users to create and manage notes for other users</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Universal Translator</h3>
+                    <p class="card-desc">Translate text to any language, binary code, or other formats with support for multiple encoding systems and language pairs.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-in-progress">In Development</div>
+                    <h3 class="card-title">Color Converter</h3>
+                    <p class="card-desc">Convert colors between different formats like HEX to RGB, HSL, CMYK, and more with visual color swatches and previews.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-in-progress">In Development</div>
+                    <h3 class="card-title">8-Ball Game</h3>
+                    <p class="card-desc">Classic Magic 8-Ball game for fun interactions and decision-making with customizable responses and entertaining animations.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-under-review">Under Review</div>
+                    <h3 class="card-title">Designer Resources</h3>
+                    <p class="card-desc">Curated collection of design resources.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-under-review">Under Review</div>
+                    <h3 class="card-title">Custom Embed Builder</h3>
+                    <p class="card-desc">allowing users to create custom buttons, embeds, images, and interactive components.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Calculator Enhancement</h3>
+                    <p class="card-desc">Making the calculator 10x better than what it already is</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-under-review">Under Review</div>
+                    <h3 class="card-title">To-Do List Manager</h3>
+                    <p class="card-desc">Comprehensive task management system with reminders, due dates, priority levels, and collaborative to-do lists.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Ephemeral Configuration</h3>
+                    <p class="card-desc">Configure ephemeral settings for each command individually, controlling message visibility and privacy per user preference.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Status Management</h3>
+                    <p class="card-desc">Allow users to set custom status for commissions and services, with visibility controls and automated status updates.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Vouching System</h3>
+                    <p class="card-desc">users can vouch for others using this command.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Database Enhancement</h3>
+                    <p class="card-desc">Major database infrastructure upgrade for improved performance, scalability, and reliability to support future growth.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Image change</h3>
+                    <p class="card-desc">image editing capabilities with up to 11 preset filters, allowing users to modify images directly within Discord.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">CoinFlip </h3>
+                    <p class="card-desc">Simple coin flipping game with customizable coins, betting options, and statistics tracking for casual gaming fun.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Weather</h3>
+                    <p class="card-desc">Satastics of the weather that the user have set to grab from a location</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Unit converter</h3>
+                    <p class="card-desc">able to convert MMs, to KMS for example</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Link-Shortener</h3>
+                    <p class="card-desc">Ability to shorten a long link to a short one.</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-planned">Planned</div>
+                    <h3 class="card-title">Define command enchantments</h3>
+                    <p class="card-desc">Making the define command better and more efficient</p>
+                </div>
+                <div class="card">
+                    <div class="status-badge status-in-progress">In Development</div>
+                    <h3 class="card-title">Available roblox fonts</h3>
+                    <p class="card-desc">Availability to see the avaialble fonts that is in roblox</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<script>
+    // Page navigation using History API
+    function navigateTo(event, pageId) {
+        event.preventDefault(); // Prevent default link behavior
+        const path = (pageId === 'home') ? '/' : `/${pageId}`;
+        history.pushState(null, '', path); // Change URL without reloading
+        showPage(pageId); // Show the corresponding section
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page-section').forEach(page => {
+            page.classList.remove('active');
+        });
+
+        // Ensure the pageId corresponds to an actual element
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        } else {
+            // If pageId doesn't exist (e.g., direct access to an invalid path)
+            // You might want to redirect to your 404.html or show a default page
+            // For now, let's fall back to 'home'
+            document.getElementById('home').classList.add('active');
+            history.replaceState(null, '', '/'); // Correct the URL to home
+            pageId = 'home'; // Set pageId to home for link highlighting
+        }
+
+        // Update active state for navigation links
+        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+            link.classList.remove('active');
+            let linkHref = link.getAttribute('href');
+            let targetPath = (pageId === 'home') ? '/' : `/${pageId}`;
+            if (linkHref === targetPath) {
+                link.classList.add('active');
+            }
+        });
+        window.scrollTo(0, 0);
+    }
+
+    // Listen for browser back/forward buttons (popstate event)
+    window.addEventListener('popstate', function() {
+        let path = window.location.pathname;
+        // Remove leading slash and get pageId. If path is '/', pageId is 'home'.
+        let pageId = (path === '/') ? 'home' : path.substring(1);
+
+        // Check if the page section actually exists
+        if (document.getElementById(pageId)) {
+            showPage(pageId);
+        } else {
+            // If the path doesn't map to a section, show home or redirect to 404 via server
+            showPage('home'); // Fallback to home, server will handle true 404s
+        }
+    });
+
+    // On page load, show correct section based on pathname
+    document.addEventListener('DOMContentLoaded', function() {
+        let path = window.location.pathname;
+        let pageId = (path === '/') ? 'home' : path.substring(1);
+
+        // If the URL directly requests a section (e.g., /features)
+        if (document.getElementById(pageId)) {
+            showPage(pageId);
+        } else if (path !== '/') {
+            // If the path is not '/' and doesn't match an existing section, it's a 404
+            // The server configuration (next step) will handle redirecting to 404.html
+            // For client-side rendering, we'll just show home as a fallback for now.
+            showPage('home');
+        } else {
+            showPage('home'); // Default to home if no specific path or it's just '/'
+        }
+
+        // Card animation observer (keep as is)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+    });
+
+    // FAQ toggle logic (keep as is)
+    function toggleFAQ(questionElem) {
+        const faqItem = questionElem.closest('.faq-item');
+        const answer = faqItem.querySelector('.faq-answer');
+        const toggle = questionElem.querySelector('.faq-toggle');
+
+        document.querySelectorAll('.faq-answer').forEach(ans => {
+            if (ans !== answer) {
+                ans.classList.remove('active');
+                const otherToggle = ans.parentElement.querySelector('.faq-toggle');
+                if (otherToggle) otherToggle.textContent = '+';
+            }
+        });
+
+        const isActive = answer.classList.toggle('active');
+        toggle.textContent = isActive ? '-' : '+';
+    }
+
+    // Mobile navigation toggle logic (keep as is)
+    function toggleMobileNav() {
+        const mobileNav = document.getElementById('mobileNav');
+        mobileNav.classList.toggle('active');
+    }
+    function closeMobileNav() {
+        const mobileNav = document.getElementById('mobileNav');
+        mobileNav.classList.remove('active');
+    }
+
+    // Filter select logic (keep as is)
+    document.getElementById('filter-select').addEventListener('change', function () {
+        const selected = this.value;
+        const cards = document.querySelectorAll('#cardGrid .card');
+
+        cards.forEach(card => {
+            const badge = card.querySelector('.status-badge');
+
+            if (!badge) return;
+
+            if (
+                selected === 'all' ||
+                (selected === 'in-progress' && badge.classList.contains('status-in-progress')) ||
+                (selected === 'planned' && badge.classList.contains('status-planned')) ||
+                (selected === 'under-review' && badge.classList.contains('status-under-review'))
+            ) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>
